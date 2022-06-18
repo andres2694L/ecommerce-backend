@@ -1,39 +1,26 @@
 package com.pucese.ecommerce.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pucese.ecommerce.dto.ResponseDTO;
-import com.pucese.ecommerce.dto.user.SignInDTO;
-import com.pucese.ecommerce.dto.user.SignInResponseDTO;
-import com.pucese.ecommerce.dto.user.SignupDTO;
-import com.pucese.ecommerce.service.UserService;
+import com.pucese.ecommerce.exception.ResourceNotFoundException;
+import com.pucese.ecommerce.model.User;
+import com.pucese.ecommerce.repository.UserRepository;
+import com.pucese.ecommerce.security.CurrentUser;
+import com.pucese.ecommerce.security.UserPrincipal;
 
-@RequestMapping("user")
 @RestController
 public class UserController {
-	
-	@Autowired
-    UserService userService;
 
-    // two apis
+    @Autowired
+    private UserRepository userRepository;
 
-    // signup
-
-    @PostMapping("/signup")
-    public ResponseDTO signup(@RequestBody SignupDTO signupDto) {
-        return userService.signUp(signupDto);
+    @GetMapping("/user/me")
+    @PreAuthorize("hasRole('USER')")
+    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+        return userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
-
-
-    // signin
-
-    @PostMapping("/signin")
-    public SignInResponseDTO signIn(@RequestBody SignInDTO signInDto) {
-        return userService.signIn(signInDto);
-    }
-	
 }
