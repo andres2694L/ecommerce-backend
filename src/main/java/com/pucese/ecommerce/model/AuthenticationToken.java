@@ -9,13 +9,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.stripe.model.Account.Company;
+
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tokens")
 public class AuthenticationToken {
-	 	@Id
+	 	public CompanyUser getCompanyuser() {
+		return companyuser;
+	}
+
+	public void setCompanyuser(CompanyUser companyuser) {
+		this.companyuser = companyuser;
+	}
+
+		@Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    @Column(name = "id")
 	    private Integer id;
@@ -24,10 +35,16 @@ public class AuthenticationToken {
 
 	    @Column(name = "created_date")
 	    private Date createdDate;
+	    
+	    @OneToOne(targetEntity = CompanyUser.class, fetch = FetchType.EAGER)
+	    @JoinColumn(nullable = false, name = "company_id")
+	    private CompanyUser companyuser;
 
 	    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	    @JoinColumn(nullable = false, name = "user_id")
 	    private User user;
+	    
+	    
 
 	    public String getToken() {
 	        return token;
@@ -65,6 +82,12 @@ public class AuthenticationToken {
 	        this.user = user;
 	        this.createdDate = new Date();
 	        this.token = UUID.randomUUID().toString();
+	    }
+	    
+	    public AuthenticationToken(CompanyUser companyuser) {
+	    	this.companyuser = companyuser;
+	    	this.createdDate = new Date();
+	    	this.token = UUID.randomUUID().toString();
 	    }
 
 	    public AuthenticationToken() {

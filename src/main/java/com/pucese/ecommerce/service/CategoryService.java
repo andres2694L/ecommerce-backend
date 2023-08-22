@@ -15,6 +15,7 @@ public class CategoryService {
     CategoryRepo categoryRepo;
 
     public void createCategory(Category category) {
+    	System.out.println("From service: "+category.getCategoryName());
         categoryRepo.save(category);
     }
 

@@ -12,11 +12,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.pucese.ecommerce.exception.BadRequestException;
 import com.pucese.ecommerce.model.AuthProvider;
+import com.pucese.ecommerce.model.CompanyUser;
 import com.pucese.ecommerce.model.User;
 import com.pucese.ecommerce.payload.ApiResponse;
 import com.pucese.ecommerce.payload.AuthResponse;
+import com.pucese.ecommerce.payload.CompanySignUpRequest;
 import com.pucese.ecommerce.payload.LoginRequest;
 import com.pucese.ecommerce.payload.SignUpRequest;
+import com.pucese.ecommerce.repository.CompanyUserRepo;
 import com.pucese.ecommerce.repository.UserRepository;
 import com.pucese.ecommerce.security.TokenProvider;
 
@@ -38,6 +41,9 @@ public class AuthController {
 
     @Autowired
     private TokenProvider tokenProvider;
+    
+    @Autowired
+    private CompanyUserRepo compaRepo;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -79,6 +85,28 @@ public class AuthController {
 
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "User registered successfully@"));
+    }
+    
+    @PostMapping("/companySignup")
+    public ResponseEntity<?> registerCompany(@Valid @RequestBody CompanySignUpRequest compRequest){
+    	
+    	if(compaRepo.existsByEmail(compRequest.getEmail())) {
+    		throw new BadRequestException("Email already in use");
+    	}
+    	CompanyUser comp = new CompanyUser();
+    	comp.setEmail(compRequest.getEmail());
+    	comp.setPassword(compRequest.getPassword());
+    	comp.setProvider(AuthProvider.local);
+    	comp.setPassword(passwordEncoder.encode(comp.getPassword()));
+    	
+    	CompanyUser result = compaRepo.save(comp);
+    	
+    	 URI location = ServletUriComponentsBuilder
+                 .fromCurrentContextPath().path("/user/me")
+                 .buildAndExpand(result.getId()).toUri();
+    	
+    	return ResponseEntity.created(location)
+    			.body(new ApiResponse(true, "Company registered succesfully@"));
     }
 
 }

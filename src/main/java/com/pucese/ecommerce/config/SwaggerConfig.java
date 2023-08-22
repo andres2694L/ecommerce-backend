@@ -27,8 +27,8 @@ public class SwaggerConfig {
 
     private ApiInfo getApiInfo() {
         return new ApiInfoBuilder()
-                .title("Ecommerce API")
-                .description("Developed by Andres Lara")
+                .title("Ecommerce controllers")
+                .description("Developed by PUCESE")
                 .version("1.0.0")
                 .license("Apache 2.0")
                 .licenseUrl("")

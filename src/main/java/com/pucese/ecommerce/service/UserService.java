@@ -17,7 +17,9 @@ import com.pucese.ecommerce.dto.user.SignupDTO;
 import com.pucese.ecommerce.exceptions.AuthenticationFailException;
 import com.pucese.ecommerce.exceptions.CustomException;
 import com.pucese.ecommerce.model.AuthenticationToken;
+import com.pucese.ecommerce.model.InformationUser;
 import com.pucese.ecommerce.model.User;
+import com.pucese.ecommerce.repository.InfoUserRepo;
 import com.pucese.ecommerce.repository.UserRepo;
 
 @Service
@@ -25,6 +27,9 @@ public class UserService {
 	  
 		@Autowired
 	    UserRepo userRepository;
+		
+		@Autowired
+		InfoUserRepo infouserRepo;
 
 	    @Autowired
 	    AuthenticationService authenticationService;
@@ -108,5 +113,10 @@ public class UserService {
 	        return new SignInResponseDTO("sucess", token.getToken());
 
 	        // return response
+	    }
+	    
+	    
+	    public InformationUser addInfo(InformationUser infoUser) {
+	    	return infouserRepo.save(infoUser);
 	    }
 }
